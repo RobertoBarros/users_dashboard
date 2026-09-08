@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     resource :dashboard, only: :show
   end
   namespace :users do
-    resource :profile, only: %i[ show update ]
+    resource :profile, only: %i[ show edit update ]
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

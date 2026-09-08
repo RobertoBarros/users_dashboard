@@ -5,6 +5,9 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     get users_profile_path
     assert_redirected_to new_session_path
 
+    get edit_users_profile_path
+    assert_redirected_to new_session_path
+
     patch users_profile_path, params: { user: { email_address: "changed@example.com" } }
     assert_redirected_to new_session_path
   end
@@ -15,8 +18,24 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     get users_profile_path
 
     assert_response :success
-    assert_select "input[name='user[email_address]'][value=?]", users(:one).email_address
+    assert_select "dd", text: users(:one).email_address
+    assert_select "a[href=?]", edit_users_profile_path, text: "Edit profile"
+    assert_select "input[name='user[email_address]']", count: 0
     assert_select "a[href=?]", admin_dashboard_path, count: 0
+  end
+
+  test "edit shows the signed in user's information" do
+    user = users(:one)
+    user.update!(full_name: "Alex Morgan")
+    sign_in_as(user)
+
+    get edit_users_profile_path
+
+    assert_response :success
+    assert_select "h1", "Edit profile"
+    assert_select "input[name='user[full_name]'][value='Alex Morgan']"
+    assert_select "input[name='user[email_address]'][value=?]", user.email_address
+    assert_select "a[href=?]", users_profile_path, text: "Cancel"
   end
 
   test "updates only the signed in user and preserves password when blank" do
@@ -25,12 +44,13 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(user)
 
     patch users_profile_path, params: { id: other_user.id, user: {
-      id: other_user.id, email_address: "updated@example.com", role: "admin",
+      id: other_user.id, full_name: "Alex Morgan", email_address: "updated@example.com", role: "admin",
       password: "", password_confirmation: ""
     } }
 
     assert_redirected_to users_profile_path
     assert_equal "updated@example.com", user.reload.email_address
+    assert_equal "Alex Morgan", user.full_name
     assert user.user?
     assert user.authenticate("password")
     assert_equal "two@example.com", other_user.reload.email_address
@@ -41,7 +61,7 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     user.update!(role: :admin)
     sign_in_as(user)
 
-    get users_profile_path
+    get edit_users_profile_path
     assert_response :success
     assert_select "a[href=?]", admin_dashboard_path
 
@@ -71,6 +91,7 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     } }
 
     assert_response :unprocessable_entity
+    assert_select "h1", "Edit profile"
     assert_select "[role=alert]"
     assert_equal "one@example.com", user.reload.email_address
     assert user.authenticate("password")

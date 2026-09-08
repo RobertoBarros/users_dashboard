@@ -1,6 +1,18 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
+  test "full name is required for new and existing users" do
+    new_user = User.new(email_address: "new@example.com", password: "password")
+
+    [ new_user, users(:one) ].each do |user|
+      [ nil, "", "   " ].each do |full_name|
+        user.full_name = full_name
+        assert_not user.save
+        assert user.errors.added?(:full_name, :blank)
+      end
+    end
+  end
+
   test "new users have the user role by default" do
     assert_equal "user", User.new.role
   end

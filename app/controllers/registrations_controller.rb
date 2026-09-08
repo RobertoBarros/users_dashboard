@@ -7,7 +7,7 @@ class RegistrationsController < ApplicationController
   end
 
   def create
-    @user = User.new(params.expect(user: %i[ email_address password password_confirmation ]))
+    @user = User.new(params.expect(user: %i[ full_name email_address password password_confirmation ]))
 
     if @user.save
       start_new_session_for @user

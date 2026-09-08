@@ -1,0 +1,7 @@
+avatar:
+  key: fixture-avatar
+  filename: avatar.png
+  content_type: image/png
+  byte_size: <%= File.size(Rails.root.join("test/fixtures/files/avatar.png")) %>
+  checksum: <%= Digest::MD5.base64digest(File.binread(Rails.root.join("test/fixtures/files/avatar.png"))) %>
+  service_name: test

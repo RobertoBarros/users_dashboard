@@ -8,7 +8,7 @@ class Users::ProfilesController < ApplicationController
   end
 
   def update
-    attributes = params.expect(user: %i[ full_name email_address password password_confirmation ])
+    attributes = params.expect(user: %i[ full_name email_address password password_confirmation avatar ])
     if attributes[:password].blank? && attributes[:password_confirmation].blank?
       attributes = attributes.except(:password, :password_confirmation)
     end

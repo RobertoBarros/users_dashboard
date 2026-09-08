@@ -40,6 +40,7 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "updates only the signed in user and preserves password when blank" do
     user = users(:one)
+    avatar_id = user.avatar.blob_id
     other_user = users(:two)
     sign_in_as(user)
 
@@ -51,9 +52,35 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to users_profile_path
     assert_equal "updated@example.com", user.reload.email_address
     assert_equal "Alex Morgan", user.full_name
+    assert_equal avatar_id, user.avatar.blob_id
     assert user.user?
     assert user.authenticate("password")
     assert_equal "two@example.com", other_user.reload.email_address
+  end
+
+  test "replaces the avatar from the profile" do
+    user = users(:one)
+    previous_avatar_id = user.avatar.blob_id
+    sign_in_as(user)
+
+    patch users_profile_path, params: { user: { avatar: fixture_file_upload("avatar.png", "image/png") } }
+
+    assert_redirected_to users_profile_path
+    assert_not_equal previous_avatar_id, user.reload.avatar.blob_id
+    follow_redirect!
+    assert_select ".avatar img[alt=?]", "#{user.full_name}'s avatar"
+  end
+
+  test "invalid avatar preserves the existing avatar" do
+    user = users(:one)
+    previous_avatar_id = user.avatar.blob_id
+    sign_in_as(user)
+
+    patch users_profile_path, params: { user: { avatar: fixture_file_upload("../users.yml", "text/plain") } }
+
+    assert_response :unprocessable_entity
+    assert_select "[role=alert]", text: /Avatar must be/
+    assert_equal previous_avatar_id, user.reload.avatar.blob_id
   end
 
   test "admin can edit their own profile" do

@@ -3,6 +3,14 @@
 <div class="mx-auto max-w-sm">
   <h1 class="mb-6 text-3xl font-bold">Profile</h1>
 
+  <% if @user.avatar.attached? %>
+    <div class="avatar mb-6">
+      <div class="w-24 rounded-full">
+        <%= image_tag @user.avatar, alt: "#{@user.full_name}'s avatar", class: "object-cover", width: 96, height: 96 %>
+      </div>
+    </div>
+  <% end %>
+
   <dl class="space-y-4">
     <div>
       <dt class="font-semibold">Full name</dt>

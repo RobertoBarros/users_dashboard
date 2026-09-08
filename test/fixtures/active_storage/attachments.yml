@@ -1,0 +1,6 @@
+<% %w[one two].each do |name| %>
+<%= name %>_avatar:
+  name: avatar
+  record: <%= name %> (User)
+  blob: avatar
+<% end %>

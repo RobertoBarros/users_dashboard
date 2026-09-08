@@ -1,0 +1,22 @@
+<tr id="<%= dom_id(user) %>" class="hover:bg-base-200">
+  <td>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+      <% if user.avatar.attached? %>
+        <div class="avatar shrink-0">
+          <div class="size-10 rounded-full">
+            <%= image_tag user.avatar, alt: "", class: "object-cover", width: 40, height: 40, loading: "lazy" %>
+          </div>
+        </div>
+      <% else %>
+        <div class="avatar avatar-placeholder shrink-0" aria-hidden="true">
+          <div class="size-10 rounded-full bg-base-200 text-base-content">
+            <span class="text-sm"><%= user.full_name.split.first(2).map { |name| name.first }.join.upcase %></span>
+          </div>
+        </div>
+      <% end %>
+      <span class="font-semibold break-words"><%= user.full_name %></span>
+    </div>
+  </td>
+  <td class="break-all"><%= user.email_address %></td>
+  <td><span class="badge badge-sm <%= user.admin? ? "badge-secondary" : "badge-info" %>"><%= user.role.humanize %></span></td>
+</tr>

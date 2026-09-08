@@ -1,4 +1,5 @@
 <% content_for :title, "Admin dashboard | Users Dashboard" %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
 
 <%= turbo_stream_from "admin_dashboard" %>
 
@@ -8,3 +9,43 @@
 </header>
 
 <%= render "user_statistics" %>
+
+<section class="mt-8" aria-labelledby="users_heading">
+  <h2 id="users_heading" class="text-xl font-semibold">Users</h2>
+
+  <div class="mt-4 overflow-x-auto rounded-box border border-base-300">
+    <table id="users" class="table table-sm sm:table-md" aria-labelledby="users_heading">
+      <thead class="bg-base-200 text-base-content">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render partial: "user", collection: @users %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <p class="text-sm tabular-nums">Showing <%= @pagy.from %>–<%= @pagy.to %> of <%= @pagy.count %> users</p>
+    <% if @pagy.last > 1 %>
+      <nav aria-label="Users pagination">
+        <div class="join">
+          <% if @pagy.previous %>
+            <%= link_to "Previous", @pagy.page_url(@pagy.previous), class: "btn btn-sm join-item", rel: "prev" %>
+          <% else %>
+            <button type="button" class="btn btn-sm join-item" disabled>Previous</button>
+          <% end %>
+          <span class="btn btn-sm join-item btn-active pointer-events-none tabular-nums" aria-current="page">Page <%= @pagy.page %> of <%= @pagy.last %></span>
+          <% if @pagy.next %>
+            <%= link_to "Next", @pagy.page_url(@pagy.next), class: "btn btn-sm join-item", rel: "next" %>
+          <% else %>
+            <button type="button" class="btn btn-sm join-item" disabled>Next</button>
+          <% end %>
+        </div>
+      </nav>
+    <% end %>
+  </div>
+</section>

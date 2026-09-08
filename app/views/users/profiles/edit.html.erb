@@ -15,11 +15,6 @@
 
   <%= form_with model: @user, url: users_profile_path, method: :patch, class: "space-y-4" do |form| %>
     <div>
-      <%= form.label :avatar, class: "mb-2 block" %>
-      <%= form.file_field :avatar, required: !@user.avatar.attached?, accept: "image/jpeg,image/png,image/gif,image/webp", aria: { describedby: "avatar-hint" }, class: "file-input w-full" %>
-      <p id="avatar-hint" class="mt-2 text-sm">Choose a JPEG, PNG, GIF, or WebP image. Leave blank to keep your current avatar.</p>
-    </div>
-    <div>
       <%= form.label :full_name, "Full name", class: "mb-2 block" %>
       <%= form.text_field :full_name, required: true, autocomplete: "name", class: "input w-full" %>
     </div>
@@ -35,6 +30,11 @@
     <div>
       <%= form.label :password_confirmation, "Confirm new password", class: "mb-2 block" %>
       <%= form.password_field :password_confirmation, autocomplete: "new-password", maxlength: 72, class: "input w-full" %>
+    </div>
+    <div>
+      <%= form.label :avatar, class: "mb-2 block" %>
+      <%= form.file_field :avatar, required: !@user.avatar.attached?, accept: "image/jpeg,image/png,image/gif,image/webp", aria: { describedby: "avatar-hint" }, class: "file-input w-full" %>
+      <p id="avatar-hint" class="mt-2 text-sm">Choose a JPEG, PNG, GIF, or WebP image. Leave blank to keep your current avatar.</p>
     </div>
     <%= form.submit "Save changes", class: "btn btn-primary w-full" %>
   <% end %>

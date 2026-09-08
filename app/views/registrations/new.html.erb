@@ -15,11 +15,6 @@
 
   <%= form_with model: @user, url: registration_path, class: "space-y-4" do |form| %>
     <div>
-      <%= form.label :avatar, class: "mb-2 block" %>
-      <%= form.file_field :avatar, required: true, accept: "image/jpeg,image/png,image/gif,image/webp", aria: { describedby: "avatar-hint" }, class: "file-input w-full" %>
-      <p id="avatar-hint" class="mt-2 text-sm">Choose a JPEG, PNG, GIF, or WebP image.</p>
-    </div>
-    <div>
       <%= form.label :full_name, "Full name", class: "mb-2 block" %>
       <%= form.text_field :full_name, required: true, autocomplete: "name", autofocus: true, class: "input w-full" %>
     </div>
@@ -35,6 +30,11 @@
     <div>
       <%= form.label :password_confirmation, "Confirm password", class: "mb-2 block" %>
       <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72, class: "input w-full" %>
+    </div>
+    <div>
+      <%= form.label :avatar, class: "mb-2 block" %>
+      <%= form.file_field :avatar, required: true, accept: "image/jpeg,image/png,image/gif,image/webp", aria: { describedby: "avatar-hint" }, class: "file-input w-full" %>
+      <p id="avatar-hint" class="mt-2 text-sm">Choose a JPEG, PNG, GIF, or WebP image.</p>
     </div>
     <%= form.submit "Sign up", class: "btn btn-primary w-full" %>
   <% end %>

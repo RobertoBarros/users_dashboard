@@ -1,7 +1,7 @@
 require "test_helper"
 
 class RegistrationsControllerTest < ActionDispatch::IntegrationTest
-  test "sign up starts a session and opens the dashboard" do
+  test "sign up starts a session and opens the profile" do
     get root_path
     assert_select "a[href=?]", new_session_path
     assert_select "a[href=?]", new_registration_path
@@ -13,10 +13,10 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
       post registration_path, params: { user: { email_address: " NEW@example.com ", password: "secure-password", password_confirmation: "secure-password" } }
     end
 
-    assert_redirected_to dashboard_path
+    assert_redirected_to users_profile_path
     follow_redirect!
     assert_response :success
-    assert_select "p", text: "Signed in as new@example.com."
+    assert_select "input[name='user[email_address]'][value='new@example.com']"
   end
 
   test "invalid registration does not create a user or session" do

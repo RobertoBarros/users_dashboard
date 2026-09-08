@@ -34,7 +34,7 @@ module Authentication
     end
 
     def after_authentication_url
-      dashboard_url
+      Current.user.admin? ? admin_dashboard_url : users_profile_url
     end
 
     def start_new_session_for(user)

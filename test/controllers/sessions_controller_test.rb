@@ -11,8 +11,16 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "create with valid credentials" do
     post session_path, params: { email_address: @user.email_address, password: "password" }
 
-    assert_redirected_to dashboard_path
+    assert_redirected_to users_profile_path
     assert cookies[:session_id]
+  end
+
+  test "admin signs in to the admin dashboard" do
+    @user.update!(role: :admin)
+
+    post session_path, params: { email_address: @user.email_address, password: "password" }
+
+    assert_redirected_to admin_dashboard_path
   end
 
   test "create with invalid credentials" do

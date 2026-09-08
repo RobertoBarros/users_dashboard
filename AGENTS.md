@@ -9,3 +9,9 @@
 - Keep tests minimal and focused on application business rules, not Rails behavior.
 - Version `db/schema.rb`.
 - Keep documentation simple and minimal.
+- Record only project-wide development conventions in this file; exclude business rules and page-specific behavior.
+- Use Pagy for pagination with deterministic ordering and a unique tie-breaker.
+- Render repeated records with collection partials and stable `dom_id(record)` IDs.
+- Eager-load associations used by collection partials to avoid N+1 queries.
+- Prefer daisyUI components and semantic colors that follow the active theme.
+- Send model broadcasts after commit. Prefer Turbo refreshes with morphing and scroll preservation when multiple page sections must update together.

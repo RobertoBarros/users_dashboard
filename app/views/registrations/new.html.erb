@@ -1,0 +1,34 @@
+<% content_for :title, "Sign up | Users Dashboard" %>
+
+<div class="mx-auto max-w-sm">
+  <h1 class="mb-6 text-3xl font-bold">Sign up</h1>
+
+  <% if @user.errors.any? %>
+    <div role="alert" class="alert alert-error mb-6">
+      <ul class="list-inside list-disc">
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @user, url: registration_path, class: "space-y-4" do |form| %>
+    <div>
+      <%= form.label :email_address, "Email", class: "mb-2 block" %>
+      <%= form.email_field :email_address, required: true, autocomplete: "username", autofocus: true, class: "input w-full" %>
+    </div>
+    <div>
+      <%= form.label :password, class: "mb-2 block" %>
+      <%= form.password_field :password, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, aria: { describedby: "password-hint" }, class: "input w-full" %>
+      <p id="password-hint" class="mt-2 text-sm">Use at least 8 characters.</p>
+    </div>
+    <div>
+      <%= form.label :password_confirmation, "Confirm password", class: "mb-2 block" %>
+      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72, class: "input w-full" %>
+    </div>
+    <%= form.submit "Sign up", class: "btn btn-primary w-full" %>
+  <% end %>
+
+  <p class="mt-6">Already registered? <%= link_to "Log in", new_session_path, class: "link" %></p>
+</div>

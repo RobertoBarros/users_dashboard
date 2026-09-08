@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+/* daisyUI 5.7.28: https://github.com/saadeghi/daisyui/releases/tag/v5.7.28 */
+@source not "./daisyui-*.mjs";
+@plugin "./daisyui-5.7.28.mjs" {
+  themes: all;
+}

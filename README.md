@@ -1,24 +1,26 @@
-# README
+# Users Dashboard
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Rails application with a home page, navbar, and theme picker with color previews and saved preferences.
 
-Things you may want to cover:
+## Stack
 
-* Ruby version
+- Ruby 4.0.6 and Rails 8.1.
+- PostgreSQL for the database.
+- ERB, Tailwind CSS 4, and daisyUI 5 for the interface.
+- JavaScript ES6, Stimulus, and Turbo for interactivity.
+- Importmap and Propshaft for JavaScript and assets.
+- Puma as the web server.
 
-* System dependencies
+daisyUI is included in the repository and compiled with Tailwind. No Node.js setup is required.
 
-* Configuration
+## Development
 
-* Database creation
+With Ruby and PostgreSQL available:
 
-* Database initialization
+```sh
+bundle install
+bin/rails db:prepare
+bin/dev
+```
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Open http://localhost:3000.

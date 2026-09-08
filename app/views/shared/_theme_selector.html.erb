@@ -1,0 +1,35 @@
+<details class="dropdown dropdown-end" data-controller="theme"
+         data-action="click@window->theme#closeOutside keydown.esc->theme#close">
+  <summary class="btn btn-ghost btn-square list-none [&::-webkit-details-marker]:hidden"
+           aria-label="Choose theme" title="Choose theme" data-theme-target="trigger">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true">
+      <path d="M12 3a9 9 0 1 0 0 18h1.5a2.5 2.5 0 0 0 1.8-4.2 1.5 1.5 0 0 1 1.1-2.6H18a3 3 0 0 0 3-3A8.9 8.9 0 0 0 12 3Z" />
+      <circle cx="7.5" cy="10" r=".75" /><circle cx="10" cy="6.5" r=".75" />
+      <circle cx="14.5" cy="6.5" r=".75" /><circle cx="17" cy="10" r=".75" />
+    </svg>
+  </summary>
+  <div class="dropdown-content z-20 mt-2 w-72 max-w-[calc(100vw-2.5rem)] rounded-box border border-base-300 bg-base-100 p-2">
+    <p class="px-3 py-2 text-sm font-semibold">Theme</p>
+    <ul class="max-h-[min(24rem,65dvh)] space-y-1 overflow-y-auto" aria-label="Available themes">
+      <% daisyui_themes.each do |theme| %>
+        <li>
+          <button type="button" class="group flex min-h-11 w-full items-center gap-3 rounded-field px-3 py-2 text-left text-sm hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary aria-pressed:bg-base-200"
+                  data-theme-target="option" data-theme-name="<%= theme %>" data-action="theme#change" aria-pressed="false">
+            <span class="flex-1"><%= theme %></span>
+            <span data-theme="<%= theme %>" class="flex items-center gap-1 rounded-box border border-base-300 bg-base-100 p-1 text-base-content" aria-hidden="true">
+              <span class="px-1 text-xs font-semibold">Aa</span>
+              <span class="size-4 rounded-field bg-primary"></span>
+              <span class="size-4 rounded-field bg-secondary"></span>
+              <span class="size-4 rounded-selector bg-accent"></span>
+            </span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="size-4 shrink-0 opacity-0 group-aria-pressed:opacity-100" aria-hidden="true">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</details>

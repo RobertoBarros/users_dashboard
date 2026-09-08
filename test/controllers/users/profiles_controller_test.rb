@@ -10,6 +10,11 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
 
     patch users_profile_path, params: { user: { email_address: "changed@example.com" } }
     assert_redirected_to new_session_path
+
+    assert_no_difference "User.count" do
+      delete users_profile_path
+    end
+    assert_redirected_to new_session_path
   end
 
   test "profile shows the signed in user and hides the admin dashboard link" do
@@ -22,6 +27,32 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", edit_users_profile_path, text: "Edit profile"
     assert_select "input[name='user[email_address]']", count: 0
     assert_select "a[href=?]", admin_dashboard_path, count: 0
+    assert_select "form[action=?][data-turbo-confirm]", users_profile_path do
+      assert_select "input[name='_method'][value='delete']"
+      assert_select "button", "Delete profile"
+    end
+  end
+
+  test "deletes only the signed in profile and all its sessions" do
+    user = users(:one)
+    other_user = users(:two)
+    user.sessions.create!
+    sign_in_as(user)
+
+    assert_difference "User.count", -1 do
+      assert_difference "Session.count", -2 do
+        delete users_profile_path, params: { id: other_user.id }
+      end
+    end
+
+    assert_redirected_to root_path
+    assert_equal "Profile deleted.", flash[:success]
+    assert_not User.exists?(user.id)
+    assert User.exists?(other_user.id)
+    assert_empty cookies[:session_id]
+
+    get users_profile_path
+    assert_redirected_to new_session_path
   end
 
   test "edit shows the signed in user's information" do

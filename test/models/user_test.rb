@@ -1,6 +1,24 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
+  include ActionCable::TestHelper
+
+  test "dashboard statistics are broadcast after creation, role change and deletion" do
+    user = users(:one).dup
+    user.email_address = "new@example.com"
+    user.avatar.attach(io: File.open(file_fixture("avatar.png")), filename: "avatar.png", content_type: "image/png")
+
+    assert_statistics_broadcast(total: 3, users: 3, admins: 0) { user.save! }
+    assert_statistics_broadcast(total: 3, users: 2, admins: 1) { user.update!(role: :admin) }
+    assert_statistics_broadcast(total: 2, users: 2, admins: 0) { user.destroy! }
+  end
+
+  test "profile changes do not broadcast dashboard statistics" do
+    assert_no_broadcasts "admin_dashboard" do
+      users(:one).update!(full_name: "Updated Name")
+    end
+  end
+
   test "full name is required for new and existing users" do
     new_user = User.new(email_address: "new@example.com", password: "password")
 
@@ -52,4 +70,16 @@ class UserTest < ActiveSupport::TestCase
     user = User.new(email_address: " DOWNCASED@EXAMPLE.COM ")
     assert_equal("downcased@example.com", user.email_address)
   end
+
+  private
+    def assert_statistics_broadcast(total:, users:, admins:, &block)
+      messages = capture_broadcasts("admin_dashboard", &block)
+      assert_equal 1, messages.size
+      stream = Nokogiri::HTML.fragment(messages.first)
+      assert_equal "replace", stream.at_css("turbo-stream")["action"]
+      assert_equal "user_statistics", stream.at_css("turbo-stream")["target"]
+      assert_equal total.to_s, stream.at_css("#total_users").text
+      assert_equal users.to_s, stream.at_css("#user_count").text
+      assert_equal admins.to_s, stream.at_css("#admin_count").text
+    end
 end

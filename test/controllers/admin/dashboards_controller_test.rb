@@ -1,6 +1,26 @@
 require "test_helper"
 
 class Admin::DashboardsControllerTest < ActionDispatch::IntegrationTest
+  test "dashboard shows total users and counts for every role with a live stream" do
+    users(:one).update!(role: :admin)
+    sign_in_as(users(:one))
+
+    get admin_dashboard_path
+
+    assert_response :success
+    assert_select "turbo-cable-stream-source[signed-stream-name]"
+    assert_select "#total_users", "2"
+    assert_select "#user_count", "1"
+    assert_select "#admin_count", "1"
+
+    users(:two).update!(role: :admin)
+    get admin_dashboard_path
+
+    assert_select "#total_users", "2"
+    assert_select "#user_count", "0"
+    assert_select "#admin_count", "2"
+  end
+
   test "dashboard requires login and becomes inaccessible after logout" do
     get admin_dashboard_path
     assert_redirected_to new_session_path

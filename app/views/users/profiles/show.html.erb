@@ -23,4 +23,8 @@
   </dl>
 
   <%= link_to "Edit profile", edit_users_profile_path, class: "btn btn-primary mt-6 w-full" %>
+
+  <%= button_to "Delete profile", users_profile_path, method: :delete,
+    class: "btn btn-outline btn-error mt-4 w-full",
+    form: { data: { turbo_confirm: "Delete your profile permanently? Your account will be removed and you will be signed out. This cannot be undone." } } %>
 </div>

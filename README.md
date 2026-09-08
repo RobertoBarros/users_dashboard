@@ -12,7 +12,7 @@ A Rails application with user registration, authentication, profiles, and an adm
 - **Roles and access:** new accounts receive the `user` role. The admin dashboard is restricted to `admin` accounts; login redirects users according to their role.
 - **Validation:** required full name and avatar, normalized and unique email addresses, and passwords of at least 8 characters, with form error messages.
 - **Themes:** daisyUI theme picker with color previews, saved browser preferences, and system light/dark preference as the default.
-- **Seeds:** an initial administrator account with a default avatar.
+- **Seeds:** an initial administrator and 50 users with Faker names, random roles, and a default avatar. Seed users use `seed-user-1@example.com` through `seed-user-50@example.com` with password `123123123`. Run `bin/rails db:seed`; repeated runs do not duplicate these accounts.
 
 ## Stack
 

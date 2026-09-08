@@ -13,7 +13,16 @@ class User < ApplicationRecord
   validates :password, length: { minimum: 8 }, allow_nil: true
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+
+  after_commit :broadcast_dashboard_statistics,
+    if: -> { previously_new_record? || destroyed? || saved_change_to_role? }
+
   private
+    def broadcast_dashboard_statistics
+      Turbo::StreamsChannel.broadcast_replace_to "admin_dashboard",
+        target: "user_statistics", partial: "admin/dashboards/user_statistics"
+    end
+
     def avatar_presence_and_type
       if !avatar.attached?
         errors.add(:avatar, "is required")

@@ -20,6 +20,12 @@ class Users::ProfilesController < ApplicationController
     end
   end
 
+  def destroy
+    @user.destroy!
+    terminate_session
+    redirect_to root_path, success: "Profile deleted.", status: :see_other
+  end
+
   private
     def set_user
       @user = Current.user

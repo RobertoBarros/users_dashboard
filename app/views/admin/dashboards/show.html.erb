@@ -1,4 +1,10 @@
 <% content_for :title, "Admin dashboard | Users Dashboard" %>
 
-<h1 class="text-3xl font-bold">Dashboard</h1>
-<p class="mt-4 break-words">Signed in as <%= Current.user.email_address %>.</p>
+<%= turbo_stream_from "admin_dashboard" %>
+
+<header>
+  <h1 class="text-3xl font-bold">Dashboard</h1>
+  <p class="mt-2 break-words text-sm">Signed in as <%= Current.user.email_address %>.</p>
+</header>
+
+<%= render "user_statistics" %>

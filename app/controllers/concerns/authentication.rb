@@ -30,7 +30,7 @@ module Authentication
     end
 
     def request_authentication
-      redirect_to new_session_path
+      redirect_to main_app.new_session_path
     end
 
     def after_authentication_url

@@ -3,6 +3,6 @@ class Admin::BaseController < ApplicationController
 
   private
     def require_admin
-      redirect_to users_profile_path, alert: "You do not have access to this page." unless Current.user.admin?
+      redirect_to main_app.users_profile_path, alert: "You do not have access to this page." unless Current.user.admin?
     end
 end

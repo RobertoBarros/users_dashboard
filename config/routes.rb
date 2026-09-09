@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount SolidQueueMonitor::Engine, at: "/admin/jobs"
+
   resource :session
   resource :registration, only: %i[ new create ]
   namespace :admin do

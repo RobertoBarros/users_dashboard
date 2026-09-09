@@ -19,6 +19,7 @@ A Rails application with user registration, authentication, profiles, and an adm
 
 - Ruby 4.0.6 and Rails 8.1.
 - PostgreSQL for the database.
+- Solid Queue for background jobs through Active Job.
 - ERB, Tailwind CSS 4, and daisyUI 5 for the interface.
 - JavaScript ES6, Stimulus, and Turbo for interactivity.
 - Importmap and Propshaft for JavaScript and assets.
@@ -37,3 +38,7 @@ bin/dev
 ```
 
 Open http://localhost:3000.
+
+## Background jobs
+
+Sign in as an admin and visit `/admin/jobs` to view jobs in Solid Queue Monitor.

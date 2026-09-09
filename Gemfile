@@ -72,3 +72,5 @@ group :test do
 end
 
 gem "pagy", "~> 43.6"
+
+gem "solid_queue_monitor", "~> 2.0"

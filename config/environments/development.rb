@@ -52,6 +52,11 @@ Rails.application.configure do
   # Append comments with runtime information tags to SQL queries in logs.
   config.active_record.query_log_tags_enabled = true
 
+  # Persist background jobs in a separate database.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+  config.solid_queue.logger = ActiveSupport::Logger.new(STDOUT)
+
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
 

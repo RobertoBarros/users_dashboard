@@ -11,7 +11,10 @@
 <%= render "user_statistics" %>
 
 <section class="mt-8" aria-labelledby="users_heading">
-  <h2 id="users_heading" class="text-xl font-semibold">Users</h2>
+  <div class="flex items-center justify-between gap-3">
+    <h2 id="users_heading" class="text-xl font-semibold">Users</h2>
+    <%= link_to "Import users", admin_user_imports_path, class: "btn btn-sm" %>
+  </div>
 
   <div class="mt-4 overflow-x-auto rounded-box border border-base-300">
     <table id="users" class="table block max-sm:[&_td]:border-0 sm:table sm:table-md" aria-labelledby="users_heading">

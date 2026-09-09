@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :user_imports, foreign_key: :admin_id, dependent: :destroy
 
   enum :role, { user: "user", admin: "admin" }, validate: true
 

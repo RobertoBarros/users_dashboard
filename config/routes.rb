@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resource :registration, only: %i[ new create ]
   namespace :admin do
     resource :dashboard, only: :show
+    resources :user_imports, only: %i[ index create show ]
     resources :users, only: %i[ show edit update ]
   end
   namespace :users do

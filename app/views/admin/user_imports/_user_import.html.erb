@@ -1,0 +1,5 @@
+<%= link_to admin_user_import_path(user_import), id: dom_id(user_import), class: "block p-4 hover:bg-base-200" do %>
+  <span class="font-medium"><%= user_import.created_at.to_fs(:short) %></span>
+  <span class="ml-2 badge"><%= user_import.status.humanize %></span>
+  <p class="mt-1 text-sm"><%= user_import.imported_count %> imported · <%= user_import.failed_count %> failed</p>
+<% end %>

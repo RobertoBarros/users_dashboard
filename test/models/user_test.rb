@@ -98,6 +98,13 @@ class UserTest < ActiveSupport::TestCase
     assert_equal("downcased@example.com", user.email_address)
   end
 
+  test "email uniqueness includes case and surrounding whitespace" do
+    user = User.new(full_name: "Duplicate User", email_address: " #{users(:one).email_address.upcase} ", password: "password")
+
+    assert_not user.save
+    assert_includes user.errors[:email_address], "has already been taken"
+  end
+
   private
     def assert_dashboard_refresh(&block)
       messages = capture_broadcasts("admin_dashboard", &block)

@@ -74,3 +74,5 @@ end
 gem "pagy", "~> 43.6"
 
 gem "solid_queue_monitor", "~> 2.0"
+
+gem "csv", "~> 3.3"

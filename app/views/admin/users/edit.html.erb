@@ -1,0 +1,11 @@
+<% content_for :title, "Edit user | Users Dashboard" %>
+
+<h1 class="mb-6 text-3xl font-bold">Edit user</h1>
+<div class="overflow-x-auto rounded-box border border-base-300">
+  <table class="table">
+    <tbody>
+      <%= render "edit", user: @user %>
+    </tbody>
+  </table>
+</div>
+<%= link_to "Back to dashboard", admin_dashboard_path, class: "btn btn-ghost mt-4" %>

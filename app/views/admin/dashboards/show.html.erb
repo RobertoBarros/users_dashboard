@@ -14,21 +14,22 @@
   <h2 id="users_heading" class="text-xl font-semibold">Users</h2>
 
   <div class="mt-4 overflow-x-auto rounded-box border border-base-300">
-    <table id="users" class="table table-sm sm:table-md" aria-labelledby="users_heading">
-      <thead class="bg-base-200 text-base-content">
+    <table id="users" class="table block max-sm:[&_td]:border-0 sm:table sm:table-md" aria-labelledby="users_heading">
+      <thead class="hidden bg-base-200 text-base-content sm:table-header-group">
         <tr>
           <th scope="col">Name</th>
           <th scope="col">Email</th>
           <th scope="col">Role</th>
+          <th scope="col">Actions</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="block max-sm:divide-y max-sm:divide-base-300 sm:table-row-group">
         <%= render partial: "user", collection: @users %>
       </tbody>
     </table>
   </div>
 
-  <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+  <div class="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-between">
     <p class="text-sm tabular-nums">Showing <%= @pagy.from %>–<%= @pagy.to %> of <%= @pagy.count %> users</p>
     <% if @pagy.last > 1 %>
       <nav aria-label="Users pagination">

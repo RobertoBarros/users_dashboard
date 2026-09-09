@@ -1,14 +1,14 @@
 <% users_by_role = User.group(:role).count %>
 
-<dl id="user_statistics" class="stats stats-vertical mt-8 w-full border border-base-300 bg-base-200 sm:stats-horizontal" aria-live="polite" aria-atomic="true">
-  <div class="stat">
-    <dt class="stat-title text-base-content">Total users</dt>
-    <dd id="total_users" class="stat-value text-primary tabular-nums"><%= users_by_role.values.sum %></dd>
+<dl id="user_statistics" class="stats stats-horizontal mt-6 w-full border border-base-300 bg-base-100" aria-live="polite" aria-atomic="true">
+  <div class="stat min-w-0 px-3 py-4 sm:px-6">
+    <dt class="stat-title text-xs text-base-content/70 sm:text-sm">Total</dt>
+    <dd id="total_users" class="stat-value text-2xl tabular-nums sm:text-4xl"><%= users_by_role.values.sum %></dd>
   </div>
   <% User.roles.each_key do |role| %>
-    <div class="stat">
-      <dt class="stat-title text-base-content"><%= role.humanize.pluralize %></dt>
-      <dd id="<%= role %>_count" class="stat-value tabular-nums"><%= users_by_role.fetch(role, 0) %></dd>
+    <div class="stat min-w-0 px-3 py-4 sm:px-6">
+      <dt class="stat-title text-xs text-base-content/70 sm:text-sm"><%= role == "admin" ? "Admin Users" : "Regular Users" %></dt>
+      <dd id="<%= role %>_count" class="stat-value text-2xl tabular-nums sm:text-4xl"><%= users_by_role.fetch(role, 0) %></dd>
     </div>
   <% end %>
 </dl>

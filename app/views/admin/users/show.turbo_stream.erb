@@ -1,0 +1,2 @@
+<%= turbo_stream.replace @user, partial: "admin/dashboards/user", locals: { user: @user } %>
+<%= turbo_stream.replace "user_statistics", partial: "admin/dashboards/user_statistics" %>

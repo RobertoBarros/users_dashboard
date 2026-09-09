@@ -1,4 +1,7 @@
 <% content_for :title, "Profile | Users Dashboard" %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+
+<%= turbo_stream_from @user, :profile %>
 
 <div class="mx-auto max-w-sm">
   <h1 class="mb-6 text-3xl font-bold">Profile</h1>

@@ -22,6 +22,29 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
+  test "updates broadcast a refresh only to the changed user's profile" do
+    user = users(:one)
+    other_stream = "#{users(:two).to_gid_param}:profile"
+
+    assert_no_broadcasts(other_stream) do
+      messages = capture_broadcasts("#{user.to_gid_param}:profile") do
+        user.update!(full_name: "Updated Name", email_address: "updated@example.com", role: :admin,
+          password: "new-password", password_confirmation: "new-password")
+      end
+      assert_equal 1, messages.size
+      stream = Nokogiri::HTML.fragment(messages.first)
+      assert_equal "refresh", stream.at_css("turbo-stream")["action"]
+    end
+  end
+
+  test "invalid updates do not broadcast a profile refresh" do
+    user = users(:one)
+
+    assert_no_broadcasts("#{user.to_gid_param}:profile") do
+      assert_not user.update(full_name: "")
+    end
+  end
+
   test "full name is required for new and existing users" do
     new_user = User.new(email_address: "new@example.com", password: "password")
 

@@ -32,8 +32,8 @@
       <%= form.password_field :password_confirmation, autocomplete: "new-password", maxlength: 72, class: "input w-full" %>
     </div>
     <div>
-      <%= form.label :avatar, class: "mb-2 block" %>
-      <%= form.file_field :avatar, required: !@user.avatar.attached?, accept: "image/jpeg,image/png,image/gif,image/webp", aria: { describedby: "avatar-hint" }, class: "file-input w-full" %>
+      <%= form.label :avatar, "Avatar (optional)", class: "mb-2 block" %>
+      <%= form.file_field :avatar, accept: "image/jpeg,image/png,image/gif,image/webp", aria: { describedby: "avatar-hint" }, class: "file-input w-full" %>
       <p id="avatar-hint" class="mt-2 text-sm">Choose a JPEG, PNG, GIF, or WebP image. Leave blank to keep your current avatar.</p>
     </div>
     <%= form.submit "Save changes", class: "btn btn-primary w-full" %>

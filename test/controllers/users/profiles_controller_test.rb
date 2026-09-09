@@ -89,6 +89,23 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "two@example.com", other_user.reload.email_address
   end
 
+  test "updates a profile without an avatar" do
+    user = users(:one)
+    user.avatar.purge
+    sign_in_as(user)
+
+    get edit_users_profile_path
+    assert_response :success
+    assert_select "input[type=file][name='user[avatar]']:not([required])"
+
+    patch users_profile_path, params: { user: { full_name: "Alex Morgan" } }
+
+    assert_redirected_to users_profile_path
+    assert_equal "Alex Morgan", user.reload.full_name
+    follow_redirect!
+    assert_select ".avatar.avatar-placeholder span", text: "AM"
+  end
+
   test "replaces the avatar from the profile" do
     user = users(:one)
     previous_avatar_id = user.avatar.blob_id

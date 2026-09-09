@@ -9,6 +9,12 @@
         <%= image_tag @user.avatar, alt: "#{@user.full_name}'s avatar", class: "object-cover", width: 96, height: 96 %>
       </div>
     </div>
+  <% else %>
+    <div class="avatar avatar-placeholder mb-6" aria-hidden="true">
+      <div class="w-24 rounded-full bg-base-200 text-base-content">
+        <span class="text-3xl"><%= @user.full_name.split.first(2).map { |name| name.first }.join.upcase %></span>
+      </div>
+    </div>
   <% end %>
 
   <dl class="space-y-4">

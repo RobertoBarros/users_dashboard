@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   enum :role, { user: "user", admin: "admin" }, validate: true
 
-  validate :avatar_presence_and_type
+  validate :avatar_type
 
   validates :full_name, presence: true
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
@@ -21,10 +21,10 @@ class User < ApplicationRecord
       Turbo::StreamsChannel.broadcast_refresh_to "admin_dashboard"
     end
 
-    def avatar_presence_and_type
-      if !avatar.attached?
-        errors.add(:avatar, "is required")
-      elsif !%w[image/jpeg image/png image/gif image/webp].include?(avatar.content_type)
+    def avatar_type
+      return unless avatar.attached?
+
+      if !%w[image/jpeg image/png image/gif image/webp].include?(avatar.content_type)
         errors.add(:avatar, "must be a JPEG, PNG, GIF, or WebP image")
       end
     end

@@ -34,11 +34,12 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
-  test "avatar is required for new and existing users" do
-    [ User.new, users(:one) ].each do |user|
+  test "avatar is optional for new and existing users" do
+    new_user = User.new(full_name: "Alex Morgan", email_address: "new@example.com", password: "password")
+
+    [ new_user, users(:one) ].each do |user|
       user.avatar = nil
-      assert user.invalid?
-      assert_includes user.errors[:avatar], "is required"
+      assert user.save
     end
   end
 

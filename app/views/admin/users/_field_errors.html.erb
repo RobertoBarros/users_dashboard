@@ -1,0 +1,5 @@
+<div id="<%= dom_id(user, "#{attribute}_errors") %>" class="mt-2 text-sm text-error" aria-live="polite">
+  <% user.errors.full_messages_for(attribute).each do |message| %>
+    <p><%= message %></p>
+  <% end %>
+</div>

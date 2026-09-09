@@ -1,6 +1,6 @@
-<tr id="<%= dom_id(user) %>" class="hover:bg-base-200">
-  <td>
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+<tr id="<%= dom_id(user) %>" class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 p-4 hover:bg-base-200 sm:table-row sm:p-0">
+  <td class="col-span-2 min-w-0 p-0 sm:p-4">
+    <div class="flex items-center gap-3">
       <% if user.avatar.attached? %>
         <div class="avatar shrink-0">
           <div class="size-10 rounded-full">
@@ -14,9 +14,10 @@
           </div>
         </div>
       <% end %>
-      <span class="font-semibold break-words"><%= user.full_name %></span>
+      <span class="min-w-0 font-semibold [overflow-wrap:anywhere]"><%= user.full_name %></span>
     </div>
   </td>
-  <td class="break-all"><%= user.email_address %></td>
-  <td><span class="badge badge-sm <%= user.admin? ? "badge-secondary" : "badge-info" %>"><%= user.role.humanize %></span></td>
+  <td class="col-span-2 min-w-0 pt-1 pr-0 pb-3 pl-13 text-sm text-base-content/70 [overflow-wrap:anywhere] sm:p-4"><%= user.email_address %></td>
+  <td class="py-0 pr-0 pl-13 sm:p-4"><span class="badge badge-sm <%= user.admin? ? "badge-secondary" : "badge-info" %>"><%= user.role.humanize %></span></td>
+  <td class="p-0 text-right sm:p-4"><%= link_to "Edit", edit_admin_user_path(user), class: "btn btn-sm", data: { turbo_stream: true }, aria: { label: "Edit #{user.full_name}" } %></td>
 </tr>

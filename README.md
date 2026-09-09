@@ -5,12 +5,13 @@ A Rails application with user registration, authentication, profiles, and an adm
 ## Features
 
 - **Home and navigation:** public home page with navigation that adapts to the signed-in user's role.
-- **Sign up:** registration with full name, unique email, password confirmation, and a required avatar. Successful registration signs the user in automatically.
+- **Sign up:** registration with full name, unique email, password confirmation, and an optional avatar. Successful registration signs the user in automatically.
 - **Authentication:** email and password login, persistent sessions, logout, and rate limits on login and sign-up requests.
-- **Profile:** view and edit your full name, email, password, and avatar. Leaving the password or avatar unchanged preserves the current value.
-- **Avatars:** Active Storage uploads supporting JPEG, PNG, GIF, and WebP, displayed as circular avatars on the profile.
+- **Profile:** view and edit your full name, email, password, and avatar. Leaving the password or avatar unchanged preserves the current value. Open profile pages receive Turbo refresh broadcasts when the user is updated, including edits made by an admin.
+- **Avatars:** Active Storage uploads supporting JPEG, PNG, GIF, and WebP, displayed as circular avatars. Users without an image display a daisyUI placeholder with their initials.
 - **Roles and access:** new accounts receive the `user` role. The admin dashboard is restricted to `admin` accounts; login redirects users according to their role.
-- **Validation:** required full name and avatar, normalized and unique email addresses, and passwords of at least 8 characters, with form error messages.
+- **Admin user editing:** each user in the admin list has an Edit button that opens a form in place using Turbo Streams. Admins can update full name, email, role, password, and avatar. Blank password and avatar fields preserve their current values. Model validation errors appear in red below the corresponding inputs; saving or canceling restores the user row without leaving the list.
+- **Validation:** required full name, normalized and unique email addresses, and passwords of at least 8 characters, with form error messages.
 - **Themes:** daisyUI theme picker with color previews, saved browser preferences, and system light/dark preference as the default.
 - **Seeds:** an initial administrator and 50 users with Faker names, random roles, and a default avatar. Seed users use `seed-user-1@example.com` through `seed-user-50@example.com` with password `123123123`. Run `bin/rails db:seed`; repeated runs do not duplicate these accounts.
 

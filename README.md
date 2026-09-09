@@ -41,10 +41,4 @@ Open http://localhost:3000.
 
 ## Background jobs
 
-Solid Queue persists jobs in a separate PostgreSQL database in development and production. Run `bin/rails db:prepare` to prepare the databases; `bin/dev` starts the job worker alongside Rails and Tailwind. Solid Cable shares broadcasts between the web and job processes.
-
-Create jobs with `bin/rails generate job JobName`, implement `perform`, and enqueue them with `JobNameJob.perform_later(arguments)`.
-
-When running Rails without `bin/dev`, start the worker separately with `bin/jobs`. In production, run `RAILS_ENV=production bin/rails db:prepare` and `RAILS_ENV=production bin/jobs`, or use the existing `SOLID_QUEUE_IN_PUMA` integration. Worker settings live in `config/queue.yml`; recurring jobs live in `config/recurring.yml`.
-
-Admins can access [Solid Queue Monitor](https://github.com/vishaltps/solid_queue_monitor) at `/admin/jobs` to inspect jobs, failures, queues, and workers. Access uses the existing login and requires the admin role; management actions use CSRF protection.
+Sign in as an admin and visit `/admin/jobs` to view jobs in Solid Queue Monitor.

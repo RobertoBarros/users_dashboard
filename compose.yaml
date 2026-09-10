@@ -1,0 +1,52 @@
+x-app: &app
+  build: .
+  image: users_dashboard:local
+  environment:
+    SECURE_COOKIES: "false"
+    SECRET_KEY_BASE_FILE: /rails/storage/.secret_key_base
+    DATABASE_URL: postgres://users_dashboard:local_password@db/users_dashboard_production
+    CACHE_DATABASE_URL: postgres://users_dashboard:local_password@db/users_dashboard_production_cache
+    QUEUE_DATABASE_URL: postgres://users_dashboard:local_password@db/users_dashboard_production_queue
+    CABLE_DATABASE_URL: postgres://users_dashboard:local_password@db/users_dashboard_production_cable
+  volumes:
+    - storage:/rails/storage
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: users_dashboard
+      POSTGRES_PASSWORD: local_password
+      POSTGRES_DB: users_dashboard_production
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U users_dashboard -d users_dashboard_production"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    <<: *app
+    ports:
+      - "127.0.0.1:${APP_PORT:-3000}:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost/up"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  jobs:
+    <<: *app
+    command: ["./bin/jobs"]
+    depends_on:
+      web:
+        condition: service_healthy
+
+volumes:
+  postgres:
+  storage:

@@ -40,6 +40,19 @@ bin/dev
 
 Open http://localhost:3000.
 
+## Docker
+
+With Docker running:
+
+```sh
+docker compose up --build
+```
+
+Open http://localhost:3000 and sign in as `admin@admin.com` with password `123123123`.
+Docker runs Rails in production mode with PostgreSQL, a Solid Queue worker, and [Thruster](https://github.com/basecamp/thruster) for asset caching and compression. The local secret and databases are prepared automatically, and seeds run on each startup without duplicating users. Docker volumes preserve the secret, database data, and uploads shared between the app and worker.
+
+Logs appear in the terminal. Press `Ctrl+C` to stop; data is preserved. Run the same command after code changes. Set `APP_PORT` in `.env` to use another port.
+
 ## Background jobs
 
 Sign in as an admin and visit `/admin/jobs` to view jobs in Solid Queue Monitor.

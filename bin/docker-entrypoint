@@ -1,8 +1,25 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
+# Share a persistent local secret between the web and worker containers.
+if [ -z "${SECRET_KEY_BASE:-}" ] && [ -n "${SECRET_KEY_BASE_FILE:-}" ]; then
+  SECRET_KEY_BASE=$(ruby -rsecurerandom -e '
+    File.open(ENV.fetch("SECRET_KEY_BASE_FILE"), File::RDWR | File::CREAT, 0600) do |file|
+      file.flock(File::LOCK_EX)
+      secret = file.read.strip
+      if secret.empty?
+        secret = SecureRandom.hex(64)
+        file.write(secret)
+        file.flush
+      end
+      print secret
+    end
+  ')
+  export SECRET_KEY_BASE
+fi
+
+# Prepare the database and seed users before starting the web server.
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+  ./bin/rails db:prepare db:seed
 fi
 
 exec "${@}"

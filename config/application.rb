@@ -11,6 +11,8 @@ module UsersDashboard
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
 
+    config.x.secure_cookies = ENV.fetch("SECURE_COOKIES", Rails.env.production?.to_s) == "true"
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.

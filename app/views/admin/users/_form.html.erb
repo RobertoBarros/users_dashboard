@@ -1,42 +1,37 @@
-<%= form_with model: [:admin, user], namespace: dom_id(user), html: { novalidate: true }, class: "grid gap-4 py-2 sm:grid-cols-2" do |form| %>
+<%= form_with builder: ApplicationFormBuilder, model: [:admin, user], namespace: dom_id(user), html: { novalidate: true }, class: "grid gap-4 py-2 sm:grid-cols-2" do |form| %>
   <div>
     <%= form.label :full_name, "Full name", class: "mb-2 block" %>
-    <%= form.text_field :full_name, autocomplete: "name", class: class_names("input w-full", "input-error": user.errors[:full_name].any?), aria: { invalid: user.errors[:full_name].any?, describedby: dom_id(user, :full_name_errors) } %>
-    <%= render "admin/users/field_errors", user: user, attribute: :full_name %>
+    <%= form.text_field :full_name, autocomplete: "name" %>
   </div>
   <div>
     <%= form.label :email_address, "Email", class: "mb-2 block" %>
-    <%= form.email_field :email_address, autocomplete: "username", class: class_names("input w-full", "input-error": user.errors[:email_address].any?), aria: { invalid: user.errors[:email_address].any?, describedby: dom_id(user, :email_address_errors) } %>
-    <%= render "admin/users/field_errors", user: user, attribute: :email_address %>
+    <%= form.email_field :email_address, autocomplete: "username" %>
   </div>
   <fieldset>
     <legend class="mb-2">Role</legend>
     <div class="flex gap-4">
       <% User.roles.each_key do |role| %>
         <%= form.label :role, value: role, class: "flex items-center gap-2 cursor-pointer" do %>
-          <%= form.radio_button :role, role, class: class_names("radio", "radio-error": user.errors[:role].any?), aria: { invalid: user.errors[:role].any?, describedby: dom_id(user, :role_errors) } %>
+          <%= form.radio_button :role, role %>
           <%= role.humanize %>
         <% end %>
       <% end %>
     </div>
-    <%= render "admin/users/field_errors", user: user, attribute: :role %>
+    <%= form.field_errors :role %>
   </fieldset>
   <div>
     <%= form.label :avatar, "Avatar (optional)", class: "mb-2 block" %>
-    <%= form.file_field :avatar, accept: "image/jpeg,image/png,image/gif,image/webp", class: class_names("file-input w-full", "file-input-error": user.errors[:avatar].any?), aria: { invalid: user.errors[:avatar].any?, describedby: "#{dom_id(user, :avatar_hint)} #{dom_id(user, :avatar_errors)}" } %>
+    <%= form.file_field :avatar, accept: "image/jpeg,image/png,image/gif,image/webp", aria: { describedby: dom_id(user, :avatar_hint) } %>
     <p id="<%= dom_id(user, :avatar_hint) %>" class="mt-2 text-sm">Choose a JPEG, PNG, GIF, or WebP image. Leave blank to keep the current avatar.</p>
-    <%= render "admin/users/field_errors", user: user, attribute: :avatar %>
   </div>
   <div>
     <%= form.label :password, "New password", class: "mb-2 block" %>
-    <%= form.password_field :password, autocomplete: "new-password", class: class_names("input w-full", "input-error": user.errors[:password].any?), aria: { invalid: user.errors[:password].any?, describedby: "#{dom_id(user, :password_hint)} #{dom_id(user, :password_errors)}" } %>
+    <%= form.password_field :password, autocomplete: "new-password", aria: { describedby: dom_id(user, :password_hint) } %>
     <p id="<%= dom_id(user, :password_hint) %>" class="mt-2 text-sm">Leave blank to keep the current password. Use at least 8 characters for a new password.</p>
-    <%= render "admin/users/field_errors", user: user, attribute: :password %>
   </div>
   <div>
     <%= form.label :password_confirmation, "Confirm new password", class: "mb-2 block" %>
-    <%= form.password_field :password_confirmation, autocomplete: "new-password", class: class_names("input w-full", "input-error": user.errors[:password_confirmation].any?), aria: { invalid: user.errors[:password_confirmation].any?, describedby: dom_id(user, :password_confirmation_errors) } %>
-    <%= render "admin/users/field_errors", user: user, attribute: :password_confirmation %>
+    <%= form.password_field :password_confirmation, autocomplete: "new-password" %>
   </div>
   <div class="flex gap-2 sm:col-span-2">
     <%= form.submit "Save changes", class: "btn" %>

@@ -3,14 +3,14 @@
 <div class="mx-auto max-w-sm">
   <h1 class="mb-6 text-3xl font-bold">Log in</h1>
 
-  <%= form_with url: session_path, class: "space-y-4" do |form| %>
+  <%= form_with builder: ApplicationFormBuilder, model: @user, scope: "", url: session_path, html: { novalidate: true }, class: "space-y-4" do |form| %>
     <div>
       <%= form.label :email_address, "Email", class: "mb-2 block" %>
-      <%= form.email_field :email_address, required: true, autocomplete: "username", autofocus: true, class: "input w-full" %>
+      <%= form.email_field :email_address, required: true, autocomplete: "username", autofocus: true %>
     </div>
     <div>
       <%= form.label :password, class: "mb-2 block" %>
-      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: "input w-full" %>
+      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72 %>
     </div>
     <%= form.submit "Log in", class: "btn btn-primary w-full" %>
   <% end %>

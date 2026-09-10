@@ -1,11 +1,11 @@
 <tr id="<%= dom_id(@user_import) %>_result_<%= result.fetch("position") %>">
   <td class="align-top tabular-nums"><%= result["position"] %></td>
   <td class="min-w-40 align-top">
-    <p class="font-medium break-words"><%= result["full_name"].presence || "—" %></p>
-    <p class="mt-1 break-all text-sm text-base-content/70"><%= result["email_address"].presence || "—" %></p>
+    <p class="font-medium wrap-break-word"><%= result["full_name"].presence || "-" %></p>
+    <p class="mt-1 break-all text-sm text-base-content/70"><%= result["email_address"].presence || "-" %></p>
   </td>
   <td class="min-w-32 align-top">
-    <span class="badge <%= result["status"] == "failed" ? 'badge-error' : 'badge-success'  %>"><%= result["status"].humanize %></span>
+    <span class="badge <%= result["status"] == "failed" ? 'badge-error' : 'badge-success' %>"><%= result["status"].humanize %></span>
     <% if result["status"] == "failed" %>
       <p class="mt-2 text-sm text-error"><%= result["error_message"] %></p>
     <% end %>

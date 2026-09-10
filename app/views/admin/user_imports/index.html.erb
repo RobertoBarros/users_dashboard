@@ -5,17 +5,11 @@
 <p class="mt-2 text-sm">Upload a CSV with name and email columns in either order, with or without headers.</p>
 <p class="mt-1 text-sm text-base-content/70">Users receive the regular user role and a random password. Admins can set their passwords from the user list.</p>
 
-<%= form_with model: @user_import, url: admin_user_imports_path, class: "mt-6 max-w-xl space-y-3" do |form| %>
+<%= form_with builder: ApplicationFormBuilder, model: @user_import, url: admin_user_imports_path, html: { novalidate: true }, class: "mt-6 max-w-xl space-y-3" do |form| %>
   <%= form.label :file, "CSV file", class: "block font-medium" %>
   <%= form.file_field :file, accept: ".csv,text/csv", required: true,
-    class: "file-input w-full #{@user_import.errors[:file].any? ? 'file-input-error' : ''}",
-    aria: { invalid: @user_import.errors[:file].any?, describedby: "file_help file_errors" } %>
+    aria: { describedby: "file_help" } %>
   <p id="file_help" class="text-sm text-base-content/70">UTF-8, up to 5 MB. Commas, semicolons, and tabs are supported.</p>
-  <div id="file_errors" class="text-sm text-error">
-    <% @user_import.errors.full_messages_for(:file).each do |message| %>
-      <p><%= message %></p>
-    <% end %>
-  </div>
   <%= form.submit "Import users", class: "btn" %>
 <% end %>
 

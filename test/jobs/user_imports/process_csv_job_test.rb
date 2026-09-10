@@ -103,6 +103,28 @@ class UserImports::ProcessCsvJobTest < ActiveJob::TestCase
     assert_equal 2, import.processed_count
   end
 
+  test "unexpected preparation failures are recorded and can be retried" do
+    import = build_import("name,email\nFirst,first@example.com\n")
+    error = IOError.new("Storage unavailable")
+    import.define_singleton_method(:prepare!) { raise error }
+
+    assert_no_enqueued_jobs only: UserImports::CreateUserJob do
+      assert_same error, assert_raises(IOError) { UserImports::ProcessCsvJob.perform_now(import) }
+    end
+    assert_predicate import.reload, :failed?
+    assert_equal "Import interrupted. An administrator can retry the job in the job monitor.", import.error_message
+    assert_empty import.results
+
+    import.singleton_class.remove_method(:prepare!)
+
+    assert_difference "User.count", 1 do
+      perform_import(import)
+    end
+    assert_predicate import.reload, :completed?
+    assert_equal 1, import.imported_count
+    assert_nil import.error_message
+  end
+
   private
     def perform_import(import)
       perform_enqueued_jobs(only: UserImports::CreateUserJob) { UserImports::ProcessCsvJob.perform_now(import) }

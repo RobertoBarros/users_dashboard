@@ -61,3 +61,14 @@ Logs appear in the terminal. Press `Ctrl+C` to stop; data is preserved. Run the 
 ## Background jobs
 
 Sign in as an admin and visit `/admin/jobs` to view jobs in Solid Queue Monitor.
+
+## Tests
+
+With PostgreSQL running, run the Minitest suite:
+
+```sh
+bin/rails db:test:prepare test
+```
+
+
+[SimpleCov](https://github.com/simplecov-ruby/simplecov) measures Ruby code coverage automatically. Open `coverage/index.html` in your browser after running the tests to view the report.

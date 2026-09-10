@@ -46,7 +46,7 @@ class Admin::UserImportsControllerTest < ActionDispatch::IntegrationTest
         end
       end
       assert_response :unprocessable_entity
-      assert_select "#file_errors.text-error p"
+      assert_select "#file_errors_user_import.text-error p"
     end
   end
 

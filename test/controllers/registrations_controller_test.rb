@@ -42,7 +42,10 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    assert_select "[role=alert]"
+    %w[full_name email_address password password_confirmation].each do |attribute|
+      assert_select "input[name='user[#{attribute}]'].input-error[aria-invalid=true]"
+      assert_select "##{attribute}_errors_user.text-error p"
+    end
   end
 
   test "existing email cannot be registered again" do

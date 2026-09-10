@@ -45,7 +45,19 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "create with invalid credentials" do
     post session_path, params: { email_address: @user.email_address, password: "wrong" }
 
-    assert_redirected_to new_session_path
+    assert_response :unprocessable_entity
+    assert_select "#password_errors_user.text-error", text: "Password or email address is incorrect."
+    assert_select "input[name=email_address][value=?]", @user.email_address
+    assert_select "input[name=password][aria-invalid=true]:not([value])"
+    assert_nil cookies[:session_id]
+  end
+
+  test "blank credentials show errors below both inputs" do
+    post session_path, params: { email_address: "", password: "" }
+
+    assert_response :unprocessable_entity
+    assert_select "#email_address_errors_user.text-error", text: "Email address can't be blank"
+    assert_select "#password_errors_user.text-error", text: "Password can't be blank"
     assert_nil cookies[:session_id]
   end
 

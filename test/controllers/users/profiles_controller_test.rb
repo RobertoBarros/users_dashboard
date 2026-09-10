@@ -127,7 +127,7 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     patch users_profile_path, params: { user: { avatar: fixture_file_upload("../users.yml", "text/plain") } }
 
     assert_response :unprocessable_entity
-    assert_select "[role=alert]", text: /Avatar must be/
+    assert_select "#avatar_errors_user_#{user.id}.text-error", text: /Avatar must be/
     assert_equal previous_avatar_id, user.reload.avatar.blob_id
   end
 
@@ -167,7 +167,10 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "h1", "Edit profile"
-    assert_select "[role=alert]"
+    %w[email_address password password_confirmation].each do |attribute|
+      assert_select "input[name='user[#{attribute}]'].input-error[aria-invalid=true]"
+      assert_select "##{attribute}_errors_user_#{user.id}.text-error p"
+    end
     assert_equal "one@example.com", user.reload.email_address
     assert user.authenticate("password")
   end

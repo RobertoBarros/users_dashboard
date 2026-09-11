@@ -10,7 +10,7 @@
       <% else %>
         <div class="avatar avatar-placeholder shrink-0" aria-hidden="true">
           <div class="size-10 rounded-full bg-base-200 text-base-content">
-            <span class="text-sm"><%= user.full_name.split.first(2).map { |name| name.first }.join.upcase %></span>
+            <span class="text-sm"><%= user_initials(user) %></span>
           </div>
         </div>
       <% end %>

@@ -4,7 +4,7 @@ class Admin::UsersController < Admin::BaseController
   def show
     respond_to do |format|
       format.html { redirect_to admin_dashboard_path }
-      format.turbo_stream
+      format.turbo_stream { @users_by_role = User.group(:role).count }
     end
   end
 
@@ -23,7 +23,10 @@ class Admin::UsersController < Admin::BaseController
       else
         respond_to do |format|
           format.html { redirect_to admin_dashboard_path, status: :see_other }
-          format.turbo_stream { render :show }
+          format.turbo_stream do
+            @users_by_role = User.group(:role).count
+            render :show
+          end
         end
       end
     else

@@ -2,12 +2,12 @@ module ApplicationHelper
   def flash_class(type)
     {
       "notice" => "alert-success",
-      "success" => "alert-success",
-      "alert" => "alert-error",
-      "error" => "alert-error",
-      "warning" => "alert-warning",
-      "info" => "alert-info"
+      "alert" => "alert-error"
     }.fetch(type.to_s, "alert-info")
+  end
+
+  def user_initials(user)
+    user.full_name.split.first(2).map { |name| name.first }.join.upcase
   end
 
   def daisyui_themes

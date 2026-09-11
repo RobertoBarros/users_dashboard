@@ -8,7 +8,7 @@
   <p class="mt-2 break-words text-sm">Signed in as <%= Current.user.email_address %>.</p>
 </header>
 
-<%= render "user_statistics" %>
+<%= render "user_statistics", users_by_role: @users_by_role %>
 
 <section class="mt-8" aria-labelledby="users_heading">
   <div class="flex items-center justify-between gap-3">

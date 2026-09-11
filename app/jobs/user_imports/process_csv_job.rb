@@ -8,7 +8,7 @@ class UserImports::ProcessCsvJob < ApplicationJob
 
       UserImports::CreateUserJob.perform_later(user_import, position, full_name, email_address)
     end
-  rescue CSV::MalformedCSVError, ArgumentError => error
+  rescue UserImport::InvalidCsvError => error
     user_import.update!(status: :failed, error_message: error.message)
   rescue StandardError
     user_import.update!(status: :failed, error_message: "Import interrupted. An administrator can retry the job in the job monitor.")

@@ -15,18 +15,10 @@ class User < ApplicationRecord
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
-  after_commit :broadcast_dashboard
-  after_update_commit :broadcast_profile
+  broadcasts_refreshes_to ->(user) { "admin_dashboard" }
+  after_update_commit -> { broadcast_refresh_later_to self, :profile }
 
   private
-    def broadcast_dashboard
-      Turbo::StreamsChannel.broadcast_refresh_to "admin_dashboard"
-    end
-
-    def broadcast_profile
-      Turbo::StreamsChannel.broadcast_refresh_to self, :profile
-    end
-
     def avatar_type
       return unless avatar.attached?
 

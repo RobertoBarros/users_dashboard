@@ -14,7 +14,7 @@ class Users::ProfilesController < ApplicationController
     end
 
     if @user.update(attributes)
-      redirect_to users_profile_path, success: "Profile updated.", status: :see_other
+      redirect_to users_profile_path, notice: "Profile updated.", status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
@@ -23,7 +23,7 @@ class Users::ProfilesController < ApplicationController
   def destroy
     @user.destroy!
     terminate_session
-    redirect_to root_path, success: "Profile deleted.", status: :see_other
+    redirect_to root_path, notice: "Profile deleted.", status: :see_other
   end
 
   private

@@ -1,14 +1,19 @@
 require "csv"
 
 class UserImport < ApplicationRecord
+  class InvalidCsvError < StandardError; end
+
   belongs_to :admin, class_name: "User"
   has_one_attached :file
 
   enum :status, { pending: "pending", processing: "processing", completed: "completed", failed: "failed" }, validate: true
 
+  scope :active, -> { where(status: %w[pending processing]) }
+  scope :newest_first, -> { order(created_at: :desc, id: :desc) }
+
   validate :csv_file
   after_create_commit :enqueue_import
-  after_update_commit :broadcast_progress
+  after_update_commit :broadcast_refresh_later
 
   def processed_count
     imported_count + failed_count
@@ -64,14 +69,14 @@ class UserImport < ApplicationRecord
 
     def parsed_rows
       source = file.download.force_encoding(Encoding::UTF_8).delete_prefix("\uFEFF")
-      raise ArgumentError, "The CSV must use UTF-8 encoding." unless source.valid_encoding? && !source.include?("\0")
+      raise InvalidCsvError, "The CSV must use UTF-8 encoding." unless source.valid_encoding? && !source.include?("\0")
 
-      data = [ ",", ";", "\t" ].filter_map do |separator|
+      data = [ ",", ";", "\t" ].lazy.filter_map do |separator|
         CSV.parse(source, col_sep: separator, skip_blanks: true).reject { |row| row.all?(&:blank?) }
       rescue CSV::MalformedCSVError
         nil
       end.find { |table| table.any? && table.all? { |row| row.size == 2 } }
-      raise ArgumentError, "Upload a CSV with exactly two columns: name and email." unless data
+      raise InvalidCsvError, "Upload a CSV with exactly two columns: name and email." unless data
 
       headers = data.first.map { |value| value.to_s.strip.downcase }
       email_headers = %w[email e-mail email_address]
@@ -79,7 +84,7 @@ class UserImport < ApplicationRecord
       header_email = headers.index { |value| email_headers.include?(value) }
       has_header = header_email && name_headers.include?(headers[1 - header_email])
       data.shift if has_header
-      raise ArgumentError, "The CSV has no users to import." if data.empty?
+      raise InvalidCsvError, "The CSV has no users to import." if data.empty?
 
       scores = 2.times.map do |column|
         data.count { |row| URI::MailTo::EMAIL_REGEXP.match?(row[column].to_s.strip) }
@@ -89,16 +94,12 @@ class UserImport < ApplicationRecord
       elsif scores.max.positive? && scores.uniq.size == 2
         scores.index(scores.max)
       end
-      raise ArgumentError, "Could not identify the email column. Add name and email headers." unless email_column
+      raise InvalidCsvError, "Could not identify the email column. Add name and email headers." unless email_column
 
       data.map { |row| [ row[1 - email_column].to_s.strip, row[email_column].to_s.strip ] }
     end
 
     def enqueue_import
       UserImports::ProcessCsvJob.perform_later(self)
-    end
-
-    def broadcast_progress
-      Turbo::StreamsChannel.broadcast_refresh_to self
     end
 end

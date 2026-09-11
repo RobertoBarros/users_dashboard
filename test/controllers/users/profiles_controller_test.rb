@@ -46,7 +46,7 @@ class Users::ProfilesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to root_path
-    assert_equal "Profile deleted.", flash[:success]
+    assert_equal "Profile deleted.", flash[:notice]
     assert_not User.exists?(user.id)
     assert User.exists?(other_user.id)
     assert_empty cookies[:session_id]

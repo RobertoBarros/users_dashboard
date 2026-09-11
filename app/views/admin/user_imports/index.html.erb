@@ -5,7 +5,7 @@
 <p class="mt-2 text-sm">Upload a CSV with name and email columns in either order, with or without headers.</p>
 <p class="mt-1 text-sm text-base-content/70">Users receive the regular user role and a random password. Admins can set their passwords from the user list.</p>
 
-<%= form_with builder: ApplicationFormBuilder, model: @user_import, url: admin_user_imports_path, html: { novalidate: true }, class: "mt-6 max-w-xl space-y-3" do |form| %>
+<%= form_with builder: ApplicationFormBuilder, model: [:admin, @user_import], html: { novalidate: true }, class: "mt-6 max-w-xl space-y-3" do |form| %>
   <%= form.label :file, "CSV file", class: "block font-medium" %>
   <%= form.file_field :file, accept: ".csv,text/csv", required: true,
     aria: { describedby: "file_help" } %>

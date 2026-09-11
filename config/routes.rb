@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   mount SolidQueueMonitor::Engine, at: "/admin/jobs"
 
-  resource :session
+  resource :session, only: %i[ new create destroy ]
   resource :registration, only: %i[ new create ]
   namespace :admin do
     resource :dashboard, only: :show

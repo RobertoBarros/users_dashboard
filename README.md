@@ -16,7 +16,7 @@ OpenAI Codex (GPT-6) helped write the code, tests, and documentation. A human ma
 - Importmap and Propshaft for JavaScript and assets.
 - Puma as the web server.
 
-The repository includes daisyUI, which Tailwind compiles. You do not need to set up Node.js.
+The repository includes daisyUI, which Tailwind compiles. Node.js is only needed for browser tests.
 
 ## Features
 
@@ -79,3 +79,17 @@ bin/rails db:test:prepare test
 ```
 
 [SimpleCov](https://github.com/simplecov-ruby/simplecov) measures Ruby code coverage automatically. Open `coverage/index.html` in your browser after running the tests to view the report.
+
+System tests use Playwright through Rails and Capybara. With Node.js and PostgreSQL available, install Chromium once and run:
+
+```sh
+npm ci
+npx playwright install chromium
+bin/rails db:test:prepare test:system
+```
+
+After setup, use `bin/rails test:system`. Rails starts the test server and runs background jobs in-process; no separate server or worker is needed. Use `HEADED=true bin/rails test:system` to watch the browser. Failed tests save screenshots in `tmp/screenshots`.
+
+To use an already installed Google Chrome instead of downloading Chromium, run `PLAYWRIGHT_CHANNEL=chrome bin/rails test:system` after `npm ci`.
+
+Keep the npm `playwright` version aligned with `Playwright::COMPATIBLE_PLAYWRIGHT_VERSION` from the `playwright-ruby-client` gem. Install the browser dependencies above before running `bin/ci` locally.

@@ -1,12 +1,12 @@
 require "test_helper"
 
 class UserImports::ProcessCsvJobTest < ActiveJob::TestCase
-  include ActionCable::TestHelper
+  include Turbo::Broadcastable::TestHelper
 
   test "detects reversed columns and persists successes and validation failures with broadcasts" do
     import = build_import("email,name\nnew@example.com,New User\n NEW@EXAMPLE.COM ,Duplicate\ninvalid,Bad Email\nblank@example.com,\n")
 
-    messages = capture_broadcasts(import.to_gid_param) do
+    streams = capture_turbo_stream_broadcasts(import) do
       assert_difference "User.count", 1 do
         perform_import(import)
       end
@@ -14,8 +14,8 @@ class UserImports::ProcessCsvJobTest < ActiveJob::TestCase
 
     assert_predicate import.reload, :completed?
     assert_equal [ 4, 1, 3 ], [ import.total_count, import.imported_count, import.failed_count ]
-    assert_operator messages.size, :>=, 4
-    assert messages.all? { |message| message.include?('action="refresh"') }
+    assert_not_empty streams
+    assert streams.all? { |stream| stream["action"] == "refresh" }
     assert_includes import.results.fetch("2").fetch("error_message"), "has already been taken"
     assert_includes import.results.fetch("3").fetch("error_message"), "is invalid"
     assert_includes import.results.fetch("4").fetch("error_message"), "can't be blank"
@@ -104,30 +104,33 @@ class UserImports::ProcessCsvJobTest < ActiveJob::TestCase
   end
 
   test "unexpected preparation failures are recorded and can be retried" do
-    import = build_import("name,email\nFirst,first@example.com\n")
-    error = IOError.new("Storage unavailable")
-    import.define_singleton_method(:prepare!) { raise error }
+    [ IOError.new("Storage unavailable"), ArgumentError.new("Invalid job arguments") ].each_with_index do |error, index|
+      import = build_import("name,email\nFirst,first-#{index}@example.com\n")
+      import.define_singleton_method(:prepare!) { raise error }
 
-    assert_no_enqueued_jobs only: UserImports::CreateUserJob do
-      assert_same error, assert_raises(IOError) { UserImports::ProcessCsvJob.perform_now(import) }
+      assert_no_enqueued_jobs only: UserImports::CreateUserJob do
+        assert_same error, assert_raises(error.class) { UserImports::ProcessCsvJob.perform_now(import) }
+      end
+      assert_predicate import.reload, :failed?
+      assert_equal "Import interrupted. An administrator can retry the job in the job monitor.", import.error_message
+      assert_empty import.results
+
+      import.singleton_class.remove_method(:prepare!)
+
+      assert_difference "User.count", 1 do
+        perform_import(import)
+      end
+      assert_predicate import.reload, :completed?
+      assert_equal 1, import.imported_count
+      assert_nil import.error_message
     end
-    assert_predicate import.reload, :failed?
-    assert_equal "Import interrupted. An administrator can retry the job in the job monitor.", import.error_message
-    assert_empty import.results
-
-    import.singleton_class.remove_method(:prepare!)
-
-    assert_difference "User.count", 1 do
-      perform_import(import)
-    end
-    assert_predicate import.reload, :completed?
-    assert_equal 1, import.imported_count
-    assert_nil import.error_message
   end
 
   private
     def perform_import(import)
-      perform_enqueued_jobs(only: UserImports::CreateUserJob) { UserImports::ProcessCsvJob.perform_now(import) }
+      perform_enqueued_jobs(only: [ UserImports::CreateUserJob, Turbo::Streams::BroadcastStreamJob ]) do
+        UserImports::ProcessCsvJob.perform_now(import)
+      end
     end
 
     def build_import(csv)

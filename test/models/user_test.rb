@@ -1,7 +1,8 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
-  include ActionCable::TestHelper
+  include ActiveJob::TestHelper
+  include Turbo::Broadcastable::TestHelper
 
   test "dashboard refresh is broadcast after creation, role change and deletion" do
     user = users(:one).dup
@@ -24,24 +25,25 @@ class UserTest < ActiveSupport::TestCase
 
   test "updates broadcast a refresh only to the changed user's profile" do
     user = users(:one)
-    other_stream = "#{users(:two).to_gid_param}:profile"
-
-    assert_no_broadcasts(other_stream) do
-      messages = capture_broadcasts("#{user.to_gid_param}:profile") do
-        user.update!(full_name: "Updated Name", email_address: "updated@example.com", role: :admin,
-          password: "new-password", password_confirmation: "new-password")
+    assert_no_turbo_stream_broadcasts([ users(:two), :profile ]) do
+      streams = capture_turbo_stream_broadcasts([ user, :profile ]) do
+        perform_enqueued_jobs(only: Turbo::Streams::BroadcastStreamJob) do
+          user.update!(full_name: "Updated Name", email_address: "updated@example.com", role: :admin,
+            password: "new-password", password_confirmation: "new-password")
+        end
       end
-      assert_equal 1, messages.size
-      stream = Nokogiri::HTML.fragment(messages.first)
-      assert_equal "refresh", stream.at_css("turbo-stream")["action"]
+      assert_equal 1, streams.size
+      assert_equal "refresh", streams.first["action"]
     end
   end
 
   test "invalid updates do not broadcast a profile refresh" do
     user = users(:one)
 
-    assert_no_broadcasts("#{user.to_gid_param}:profile") do
-      assert_not user.update(full_name: "")
+    assert_no_turbo_stream_broadcasts([ user, :profile ]) do
+      perform_enqueued_jobs(only: Turbo::Streams::BroadcastStreamJob) do
+        assert_not user.update(full_name: "")
+      end
     end
   end
 
@@ -107,9 +109,10 @@ class UserTest < ActiveSupport::TestCase
 
   private
     def assert_dashboard_refresh(&block)
-      messages = capture_broadcasts("admin_dashboard", &block)
-      assert_equal 1, messages.size
-      stream = Nokogiri::HTML.fragment(messages.first)
-      assert_equal "refresh", stream.at_css("turbo-stream")["action"]
+      streams = capture_turbo_stream_broadcasts("admin_dashboard") do
+        perform_enqueued_jobs(only: Turbo::Streams::BroadcastStreamJob, &block)
+      end
+      assert_equal 1, streams.size
+      assert_equal "refresh", streams.first["action"]
     end
 end

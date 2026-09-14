@@ -31,6 +31,17 @@ class Admin::UsersController < Admin::BaseController
     end
   end
 
+  def destroy
+    @user.destroy!
+
+    if @user == Current.user
+      terminate_session
+      redirect_to root_path, success: "Profile deleted.", status: :see_other
+    else
+      redirect_to admin_dashboard_path, success: "User deleted.", status: :see_other
+    end
+  end
+
   private
     def set_user
       @user = User.find(params[:id])

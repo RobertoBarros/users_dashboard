@@ -33,8 +33,10 @@
     <%= form.label :password_confirmation, "Confirm new password", class: "mb-2 block" %>
     <%= form.password_field :password_confirmation, autocomplete: "new-password" %>
   </div>
-  <div class="flex gap-2 sm:col-span-2">
+  <div class="flex flex-wrap gap-2 sm:col-span-2">
     <%= form.submit "Save changes", class: "btn" %>
     <%= link_to "Cancel", admin_user_path(user), class: "btn btn-ghost", data: { turbo_stream: true } %>
+    <%= link_to "Delete", admin_user_path(user), class: "btn btn-outline btn-error ml-auto",
+      data: { turbo_method: :delete, turbo_confirm: "Delete #{user.full_name} (#{user.email_address}) permanently? This cannot be undone." } %>
   </div>
 <% end %>

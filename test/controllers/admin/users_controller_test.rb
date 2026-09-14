@@ -10,16 +10,25 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "admin opens and cancels inline editing" do
     get admin_dashboard_path
-    assert_select "#user_#{@user.id} a[data-turbo-stream][href=?]", edit_admin_user_path(@user)
+    assert_select "#users th", count: 3
+    assert_select "#user_#{@user.id}[data-controller=user-row][data-action='click->user-row#edit']" do
+      assert_select "td", count: 3
+      assert_select "a[data-user-row-target=link][data-turbo-stream][href=?]", edit_admin_user_path(@user), text: @user.full_name
+      assert_select "a", text: "Edit", count: 0
+    end
 
     get edit_admin_user_path(@user), as: :turbo_stream
     assert_response :success
     assert_select "turbo-stream[action=replace][target=user_#{@user.id}]" do
+      assert_select "td[colspan='3']"
       assert_select "form[action=?]", admin_user_path(@user) do
         %w[full_name email_address role password password_confirmation avatar].each do |attribute|
           assert_select "[name=?]", "user[#{attribute}]"
         end
         assert_select "a[data-turbo-stream][href=?]", admin_user_path(@user), text: "Cancel"
+        assert_select "a.ml-auto[data-turbo-method=delete][data-turbo-confirm=?][href=?]",
+          "Delete #{@user.full_name} (#{@user.email_address}) permanently? This cannot be undone.",
+          admin_user_path(@user), text: "Delete"
       end
     end
 
@@ -29,6 +38,59 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       assert_select "tr#user_#{@user.id}"
       assert_select "form", count: 0
     end
+  end
+
+  test "admin deletes another user and their sessions" do
+    @user.sessions.create!
+
+    assert_difference "User.count", -1 do
+      assert_difference "Session.count", -1 do
+        delete admin_user_path(@user), as: :turbo_stream
+      end
+    end
+
+    assert_response :see_other
+    assert_redirected_to admin_dashboard_path
+    assert_equal "User deleted.", flash[:success]
+    assert_not User.exists?(@user.id)
+    assert User.exists?(@admin.id)
+    follow_redirect!
+    assert_select "#user_#{@user.id}", count: 0
+  end
+
+  test "admin can delete their own account" do
+    get edit_admin_user_path(@admin), as: :turbo_stream
+    assert_select "a[data-turbo-method=delete][href=?]", admin_user_path(@admin), text: "Delete"
+
+    assert_difference "User.count", -1 do
+      delete admin_user_path(@admin), as: :turbo_stream
+    end
+
+    assert_redirected_to root_path
+    assert_empty cookies[:session_id]
+    assert_not User.exists?(@admin.id)
+    get admin_dashboard_path
+    assert_redirected_to new_session_path
+  end
+
+  test "regular users cannot delete users through the admin endpoint" do
+    sign_in_as(@user)
+
+    [ @admin, @user ].each do |user|
+      assert_no_difference "User.count" do
+        delete admin_user_path(user), as: :turbo_stream
+      end
+      assert_redirected_to users_profile_path
+    end
+  end
+
+  test "anonymous visitors cannot delete users" do
+    delete session_path
+
+    assert_no_difference "User.count" do
+      delete admin_user_path(@user)
+    end
+    assert_redirected_to new_session_path
   end
 
   test "admin updates all editable user data" do

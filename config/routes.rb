@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   namespace :admin do
     resource :dashboard, only: :show
     resources :user_imports, only: %i[ index create show ]
-    resources :users, only: %i[ show edit update ]
+    resources :users, only: %i[ show edit update destroy ]
   end
   namespace :users do
     resource :profile, only: %i[ show edit update destroy ]
